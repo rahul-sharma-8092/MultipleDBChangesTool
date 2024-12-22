@@ -14,6 +14,7 @@
 
     <webopt:bundlereference runat="server" path="~/Content/css" />
     <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 
 </head>
 <body>
@@ -46,8 +47,8 @@
                 </button>
                 <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item"><a class="nav-link" runat="server" href="~/">Add Script</a></li>
-                        <li class="nav-item"><a class="nav-link" runat="server" href="~/About">Scripts</a></li>
+                        <li class="nav-item"><a class="nav-link" runat="server" href="~/AddScript.aspx">Add Script</a></li>
+                        <li class="nav-item"><a class="nav-link" runat="server" href="~/ListScript.aspx">Scripts</a></li>
                     </ul>
                 </div>
             </div>

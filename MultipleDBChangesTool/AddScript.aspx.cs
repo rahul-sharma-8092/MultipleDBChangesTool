@@ -1,5 +1,9 @@
-﻿using System;
+﻿using BAL;
+using Entity;
+using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
@@ -18,11 +22,27 @@ namespace MultipleDBChangesTool
         {
             if (Page.IsValid)
             {
-                if (!FileUpload1.HasFile)
+                if (!(FileUpload1.HasFile && FileUpload1.FileName.Split('.')[1].ToLower() == "sql"))
                 {
+                    ClientScript.RegisterStartupScript(this.GetType(), "scriptKey", "alert('Please select a valid SQL file.');", true);
                     return;
                 }
-                 
+
+                Scripts scripts = new Scripts();
+                scripts.Name = FileUpload1.FileName;
+                scripts.PhySicalPath = CommonFunc.UploadFile(FileUpload1.PostedFile);
+                scripts.ServerPath = Path.Combine(ConfigurationManager.AppSettings["ScriptUploadPath"], FileUpload1.FileName);
+                scripts.Query = File.ReadAllText(scripts.PhySicalPath);
+
+                int result = new ScriptsMgt().AddScriptFile(scripts);
+                if (result > 0)
+                {
+                    ClientScript.RegisterStartupScript(this.GetType(), "scriptKey", "alert('Script Added Successfully');", true);
+                }
+                else
+                {
+                    ClientScript.RegisterStartupScript(this.GetType(), "scriptKey", "alert('Something went wrong.');", true);
+                }
             }
         }
     }

@@ -1,0 +1,2 @@
+﻿CREATE USER [JarvisSQL] FOR LOGIN [JarvisSQL];
+
