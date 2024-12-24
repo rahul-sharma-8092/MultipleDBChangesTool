@@ -78,6 +78,15 @@ namespace MultipleDBChangesTool
         protected global::System.Web.UI.WebControls.Button btnTestConn;
 
         /// <summary>
+        /// divListDB control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl divListDB;
+
+        /// <summary>
         /// chkDatabaseList control.
         /// </summary>
         /// <remarks>

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.UI.WebControls;
 
 namespace BAL
 {
@@ -32,6 +33,16 @@ namespace BAL
         public bool TestConnection(SqlServer sqlServer)
         {
             return new DAL.ScriptsSQL().TestConnection(sqlServer);
+        }
+
+        public List<ListItem> GetAllDataBase(SqlServer sqlServer)
+        {
+            return new DAL.ScriptsSQL().GetAllDataBase(sqlServer);
+        }
+
+        public int ExecuteScript(SqlServer sqlServer, string script)
+        {
+            return new DAL.ScriptsSQL().ExecuteScript(sqlServer, script);
         }
     }
 }

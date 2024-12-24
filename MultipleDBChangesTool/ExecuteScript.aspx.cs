@@ -2,9 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using System.Xml.Linq;
 
 namespace MultipleDBChangesTool
 {
@@ -36,7 +38,22 @@ namespace MultipleDBChangesTool
             sql.IsAuthenticated = new BAL.ScriptsMgt().TestConnection(sql);
             if (sql.IsAuthenticated)
             {
-                
+                //string script = System.IO.File.ReadAllText(hdnPhysicalPath.Value);
+                divListDB.Visible = true;
+                List<ListItem> DBName = new BAL.ScriptsMgt().GetAllDataBase(sql);
+                chkDatabaseList.DataSource = DBName;
+                chkDatabaseList.DataTextField = "Text";
+                chkDatabaseList.DataValueField = "Value";
+                chkDatabaseList.DataBind();
+            }
+            else
+            {
+                divListDB.Visible = false;
+                chkDatabaseList.DataSource = new List<ListItem>();
+                chkDatabaseList.DataTextField = "Text";
+                chkDatabaseList.DataValueField = "Value";
+                chkDatabaseList.DataBind();
+                ClientScript.RegisterStartupScript(this.GetType(), "connTest", "alert('Something went wrong. Please check creditinals.');", true);
             }
         }
 

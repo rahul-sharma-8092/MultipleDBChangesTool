@@ -7,6 +7,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.UI.WebControls;
 
 namespace DAL
 {
@@ -167,7 +168,7 @@ namespace DAL
                 }
                 else if (sql.Authentication == "2")
                 {
-                    connection.ConnectionString = string.Format("Data Source={0};Initial Catalog=master;Integrated Security=True;User ID={1};Password={2}", sql.ServerName, sql.UserName, sql.Password);
+                    connection.ConnectionString = string.Format("Data Source={0};Initial Catalog=master;User ID={1};Password={2}", sql.ServerName, sql.UserName, sql.Password);
                 }
                 
                 connection.Open();
@@ -182,6 +183,97 @@ namespace DAL
                 CommonSQL.ForceConnectionClose(connection);
             }
             return true;
+        }
+
+        public List<ListItem> GetAllDataBase(SqlServer sql)
+        {
+            List<ListItem> listDBName = new List<ListItem>();
+           
+            SqlConnection connection = new SqlConnection(connectionString);
+            SqlCommand cmd = new SqlCommand();
+            
+            if (sql.Authentication == "1")
+            {
+                connection.ConnectionString = string.Format("Data Source={0};Initial Catalog=MultipleDBChangesTool;Integrated Security=True;", sql.ServerName);
+            }
+            else if (sql.Authentication == "2")
+            {
+                connection.ConnectionString = string.Format("Data Source={0};Initial Catalog=MultipleDBChangesTool;User ID={1};Password={2}", sql.ServerName, sql.UserName, sql.Password);
+            }
+            
+            try
+            {
+                connection.Open();
+                cmd.CommandText = "GetAllDataBase";
+                cmd.Connection = connection;
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                SqlDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    if (reader.HasRows)
+                    {
+                        ListItem db = new ListItem();
+                        db.Text = db.Value = Convert.ToString(reader["DBName"]);
+                        listDBName.Add(db);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                CommonSQL.AddLogToDB(ex);
+                throw;
+            }
+            finally
+            {
+                CommonSQL.ForceConnectionClose(connection, cmd);
+            }
+            return listDBName;
+        }
+
+        public int ExecuteScript(SqlServer sql, string script)
+        {
+            SqlConnection connection = new SqlConnection();
+            SqlCommand cmd = new SqlCommand();
+
+            SqlTransaction transaction = null;
+            try
+            {
+                if (sql.Authentication == "1")
+                {
+                    connection.ConnectionString = string.Format("Data Source={0};Initial Catalog=100016_TestDB;Integrated Security=True;", sql.ServerName);
+                }
+                else if (sql.Authentication == "2")
+                {
+                    connection.ConnectionString = string.Format("Data Source={0};Initial Catalog=100016_TestDB;User ID={1};Password={2}", sql.ServerName, sql.UserName, sql.Password);
+                }
+                connection.Open();
+                transaction = connection.BeginTransaction();
+                cmd.Connection = connection;
+                cmd.Transaction = transaction;
+
+                string[] commandTexts = script.Split(new string[] { "GO" }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (string commandText in commandTexts)
+                {
+                    cmd.CommandType = CommandType.Text;
+                    cmd.CommandText = commandText;
+                    
+                    cmd.ExecuteNonQuery();
+                }
+                transaction.Commit();
+                resultInt = 1;
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                CommonSQL.AddLogToDB(ex);
+                throw;
+            }
+            finally
+            {
+                CommonSQL.ForceConnectionClose(connection, cmd);
+            }
+            return resultInt;
         }
     }
 }

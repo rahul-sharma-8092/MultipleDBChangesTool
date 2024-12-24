@@ -1,6 +1,11 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="ExecuteScript.aspx.cs" Inherits="MultipleDBChangesTool.ExecuteScript" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
+    <style>
+        table#MainContent_chkDatabaseList label { margin: 5px 10px; font-size: 16px; font-weight: 600;}
+        table#MainContent_chkDatabaseList input { vertical-align: middle; width: 16px; height: 16px; }
+    </style>
+
     <main class="container mt-4">
         <div class="card shadow-sm">
             <div class="card-header bg-primary text-white">
@@ -35,7 +40,7 @@
 
                     <div class="col-md-3">
                         <asp:Label Text="Password" runat="server" CssClass="form-label" />
-                        <asp:TextBox ID="txtPassword" TextMode="Password" runat="server" CssClass="form-control" />
+                        <asp:TextBox ID="txtPassword" runat="server" CssClass="form-control" />
                     </div>
                 </div>
 
@@ -52,12 +57,12 @@
                 </div>
             </div>
 
-            <!-- Databases List with Checkboxes -->
-            <div class="card-body">
-                <div class="row mb-3">
+            <!-- Database List -->
+            <div class="card-footer bg-light p-4 rounded-bottom-4" runat="server" id="divListDB" visible="false">
+                <h5 class="fw-bold text-primary mb-3 ps-4">Select Databases</h5>
+                <div class="row">
                     <div class="col-md-12">
-                        <asp:Label Text="Select Databases" runat="server" CssClass="form-label" />
-                        <asp:CheckBoxList ID="chkDatabaseList" runat="server" CssClass="form-check">
+                        <asp:CheckBoxList ID="chkDatabaseList" runat="server" CssClass="form-check" >
                         </asp:CheckBoxList>
                     </div>
                 </div>
