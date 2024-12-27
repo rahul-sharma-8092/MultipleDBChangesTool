@@ -4,6 +4,9 @@
     <style>
         table#MainContent_chkDatabaseList label { margin: 5px 10px; font-size: 16px; font-weight: 600;}
         table#MainContent_chkDatabaseList input { vertical-align: middle; width: 16px; height: 16px; }
+        #chkSelectAll{ width: 17px; height: 17px; }
+        span.form-check-input{ border: none; margin-left: 25px; }
+        label.form-check-label{ line-height: 1; vertical-align: middle; margin-top: -11px; font-weight: 600; user-select: none; }
     </style>
 
     <main class="container mt-4">
@@ -46,7 +49,7 @@
 
                 <div class="row mb-3">
                     <div class="col-md-3">
-                        <asp:Button ID="btnExecuteScript" Text="Execute Script" runat="server" CssClass="btn btn-success" />
+                        <asp:Button ID="btnExecuteScript" OnClick="btnExecuteScript_Click" Text="Execute Script" runat="server" Enabled="false" CssClass="btn btn-success" />
                     </div>
                     <div class="col-md-3"></div>
                     <div class="col-md-3"></div>
@@ -62,7 +65,10 @@
                 <h5 class="fw-bold text-primary mb-3 ps-4">Select Databases</h5>
                 <div class="row">
                     <div class="col-md-12">
+                        <asp:CheckBox ID="chkSelectAll" runat="server" ClientIDMode="Static" CssClass="form-check-input" onclick="toggleSelectAll(this);" />
+                        <label for="chkSelectAll" class="form-check-label">Select All</label>
                         <asp:CheckBoxList ID="chkDatabaseList" runat="server" CssClass="form-check" >
+
                         </asp:CheckBoxList>
                     </div>
                 </div>
@@ -74,5 +80,16 @@
     <asp:HiddenField ID="hdnName" runat="server" />
     <asp:HiddenField ID="hdnPhysicalPath" runat="server" />
     <asp:HiddenField ID="hdnServerPath" runat="server" />
+
+    <script type="text/javascript">
+    
+        function toggleSelectAll(selectAllCheckbox) {
+            var checkBoxList = document.querySelectorAll("#<%= chkDatabaseList.ClientID %> input[type='checkbox']");
+            checkBoxList.forEach(function (checkbox) {
+                checkbox.checked = selectAllCheckbox.checked;
+            });
+        }
+    </script>
+
 
 </asp:Content>

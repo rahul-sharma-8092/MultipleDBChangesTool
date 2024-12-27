@@ -39,7 +39,7 @@ namespace MultipleDBChangesTool
             if (sql.IsAuthenticated)
             {
                 //string script = System.IO.File.ReadAllText(hdnPhysicalPath.Value);
-                divListDB.Visible = true;
+                divListDB.Visible = btnExecuteScript.Enabled = true;
                 List<ListItem> DBName = new BAL.ScriptsMgt().GetAllDataBase(sql);
                 chkDatabaseList.DataSource = DBName;
                 chkDatabaseList.DataTextField = "Text";
@@ -48,7 +48,7 @@ namespace MultipleDBChangesTool
             }
             else
             {
-                divListDB.Visible = false;
+                divListDB.Visible = btnExecuteScript.Enabled = false;
                 chkDatabaseList.DataSource = new List<ListItem>();
                 chkDatabaseList.DataTextField = "Text";
                 chkDatabaseList.DataValueField = "Value";
@@ -69,6 +69,51 @@ namespace MultipleDBChangesTool
                     hdnPhysicalPath.Value = script.PhySicalPath;
                     hdnServerPath.Value = script.ServerPath;
                 }
+            }
+        }
+
+        protected void btnExecuteScript_Click(object sender, EventArgs e)
+        {
+            List<string> result = null;
+            List<SqlServer> allDB = new List<SqlServer>();
+            string script = System.IO.File.ReadAllText(hdnPhysicalPath.Value).Trim();
+
+            chkDatabaseList.Items.Cast<ListItem>().Where(i => i.Selected).ToList().ForEach(x =>
+            {
+                SqlServer sql = new SqlServer();
+                sql.ServerName = txtServerName.Text;
+                sql.Authentication = ddlAuthentication.SelectedValue;
+                sql.UserName = sql.Password = x.Value.Split('_')[0];
+                sql.DataBaseName = x.Value.Contains("MultipleDBChangesTool") ? "MultipleDBChangesTool" : x.Value;
+
+                allDB.Add(sql);
+            });
+
+            if (!string.IsNullOrEmpty(script) && allDB.Count > 0)
+            {
+                result = new BAL.ScriptsMgt().ExecuteScript(allDB, script);
+                if (result != null && result.Count == 0)
+                {
+                   ClientScript.RegisterStartupScript(this.GetType(), "scriptExec", "alert('Script executed successfully in all Selected DB.');", true);
+                }
+                else if(result != null && result.Count > 0)
+                {
+                    string dbName = "";
+                    result.ForEach(x =>
+                    {
+                        string xxx = Regex.Replace(x, @"[\n\r\t]", " ");
+                        dbName += xxx != null ? xxx + "\\n" : "";
+                    });
+                    ClientScript.RegisterStartupScript(this.GetType(), "scriptExecFail", "alert('Script " + dbName + "');", true);
+                }
+                else
+                {
+                    ClientScript.RegisterStartupScript(this.GetType(), "InternalError", "alert('Something went wrong.');", true);
+                }
+            }
+            else
+            {
+                ClientScript.RegisterStartupScript(this.GetType(), "DBNotSelected", "alert('Please select atleast one DB.');", true);
             }
         }
     }

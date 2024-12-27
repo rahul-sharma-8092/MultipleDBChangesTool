@@ -1,5 +1,7 @@
-﻿using Entity;
+﻿using DAL;
+using Entity;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -40,9 +42,25 @@ namespace BAL
             return new DAL.ScriptsSQL().GetAllDataBase(sqlServer);
         }
 
-        public int ExecuteScript(SqlServer sqlServer, string script)
+        public List<string> ExecuteScript(List<SqlServer> sqlServers, string script)
         {
-            return new DAL.ScriptsSQL().ExecuteScript(sqlServer, script);
+            ConcurrentBag<string> result = new ConcurrentBag<string>();
+            var options = new ParallelOptions { MaxDegreeOfParallelism = 10 };
+
+            try
+            {
+                Parallel.ForEach(sqlServers, options, oneDB =>
+                {
+                    result.Add(new DAL.ScriptsSQL().ExecuteScript(oneDB, script));
+                });
+            }
+            catch(Exception ex)
+            {
+                CommonSQL.AddLogToDB(ex);
+                result.Add("Failed: " + ex.InnerException.Message.ToString());
+            }
+
+            return result.ToList().Where(x => x.Contains("Failed")).ToList();
         }
     }
 }

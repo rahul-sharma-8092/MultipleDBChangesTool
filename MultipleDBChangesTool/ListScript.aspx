@@ -28,7 +28,7 @@
                             <td><%# Eval("Name") %></td>
                             <td><%# Eval("CreatedAT", "{0:dd-MM-yyyy HH:mm}") %></td>
                             <td class="text-center">
-                                <asp:Button ID="btnPreview" runat="server" CssClass="btn btn-primary btn-sm" Text="Preview" OnClientClick='<%# "return openPreview(\"" + Eval("ID") + "\", \"" + Eval("ServerPath") + "\")" %>' />
+                                <asp:Button ID="btnPreview" runat="server" CssClass="btn btn-primary btn-sm" Text="Preview" OnClientClick='<%# "return openPreview(\"" + Eval("ID") + "\", \"" + Eval("Name") + "\")" %>' />
                             </td>
                             <td class="text-center">
                                 <asp:Button ID="btnExecute" runat="server" CssClass="btn btn-primary btn-sm" CommandArgument='<%# Eval("ID") %>' CommandName="ExecuteScript" Text="Execute" />
@@ -43,4 +43,12 @@
             </div>
         </div>
     </main>
+
+    <script>
+        function openPreview(id, fileName) {
+            const url = `/PreviewSQLQuery.aspx?fileName=${fileName}`;
+            window.open(url, '_blank', 'width=800,height=600,resizable=yes,scrollbars=yes');
+            return false;
+        }
+    </script>
 </asp:Content>

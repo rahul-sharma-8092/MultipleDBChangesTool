@@ -161,5 +161,13 @@
     </Build>
     <Build Include="Security\JarvisAI.sql" />
     <Build Include="Security\RoleMemberships.sql" />
+    <Build Include="dbo\Tables\DBDetails.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="dbo\Stored Procedures\CreateDatabaseAndUser.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
   </ItemGroup>
 </Project>

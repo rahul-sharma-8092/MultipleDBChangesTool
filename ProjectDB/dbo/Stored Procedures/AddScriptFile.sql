@@ -6,8 +6,7 @@
 CREATE     PROCEDURE [dbo].[AddScriptFile]
 	@Name NVARCHAR(500),
 	@PhysicalPath NVARCHAR(MAX),
-	@ServerPath NVARCHAR(MAX),
-	@Query NVARCHAR(MAX)
+	@ServerPath NVARCHAR(MAX)
 AS
 BEGIN
 	SET NOCOUNT ON;
@@ -16,7 +15,7 @@ BEGIN
 	
 	SET NOCOUNT OFF;
 
-	INSERT INTO Scripts([Name], PhySicalPath, ServerPath, Query)
-	VALUES (@Name, @PhysicalPath, @ServerPath, @Query);
+	INSERT INTO Scripts([Name], PhySicalPath, ServerPath)
+	VALUES (@Name, @PhysicalPath, @ServerPath);
 
 END

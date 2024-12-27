@@ -31,7 +31,6 @@ namespace DAL
                 cmd.Parameters.AddWithValue("@Name", scripts.Name);
                 cmd.Parameters.AddWithValue("@PhySicalPath", scripts.PhySicalPath);
                 cmd.Parameters.AddWithValue("@ServerPath", scripts.ServerPath);
-                cmd.Parameters.AddWithValue("@Query", scripts.Query ?? "");
 
                 resultInt = cmd.ExecuteNonQuery();
             }
@@ -214,7 +213,8 @@ namespace DAL
                     if (reader.HasRows)
                     {
                         ListItem db = new ListItem();
-                        db.Text = db.Value = Convert.ToString(reader["DBName"]);
+                        db.Text = Convert.ToString(reader["DBName"]);
+                        db.Value = Convert.ToString(reader["DBCredentials"]);
                         listDBName.Add(db);
                     }
                 }
@@ -231,7 +231,7 @@ namespace DAL
             return listDBName;
         }
 
-        public int ExecuteScript(SqlServer sql, string script)
+        public string ExecuteScript(SqlServer sql, string script)
         {
             SqlConnection connection = new SqlConnection();
             SqlCommand cmd = new SqlCommand();
@@ -241,11 +241,11 @@ namespace DAL
             {
                 if (sql.Authentication == "1")
                 {
-                    connection.ConnectionString = string.Format("Data Source={0};Initial Catalog=100016_TestDB;Integrated Security=True;", sql.ServerName);
+                    connection.ConnectionString = string.Format("Data Source={0};Initial Catalog={1};Integrated Security=True;", sql.ServerName, sql.DataBaseName);
                 }
                 else if (sql.Authentication == "2")
                 {
-                    connection.ConnectionString = string.Format("Data Source={0};Initial Catalog=100016_TestDB;User ID={1};Password={2}", sql.ServerName, sql.UserName, sql.Password);
+                    connection.ConnectionString = string.Format("Data Source={0};Initial Catalog={1};User ID={2};Password={3}", sql.ServerName, sql.DataBaseName, sql.UserName, sql.Password);
                 }
                 connection.Open();
                 transaction = connection.BeginTransaction();
@@ -261,19 +261,33 @@ namespace DAL
                     cmd.ExecuteNonQuery();
                 }
                 transaction.Commit();
-                resultInt = 1;
+                result = "Success: " + sql.DataBaseName;
             }
             catch (Exception ex)
             {
-                transaction.Rollback();
-                CommonSQL.AddLogToDB(ex);
-                throw;
+                if (ex.Message.Contains("multi-statement transaction"))
+                {
+                    string[] commandTexts = script.Split(new string[] { "GO" }, StringSplitOptions.RemoveEmptyEntries);
+                    foreach (string commandText in commandTexts)
+                    {
+                        cmd.CommandType = CommandType.Text;
+                        cmd.CommandText = commandText;
+
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+                else
+                {
+                    result = "Failed: " + sql.DataBaseName;
+                    CommonSQL.AddLogToDB(ex);
+                    transaction.Rollback();
+                }
             }
             finally
             {
                 CommonSQL.ForceConnectionClose(connection, cmd);
             }
-            return resultInt;
+            return result;
         }
     }
 }
