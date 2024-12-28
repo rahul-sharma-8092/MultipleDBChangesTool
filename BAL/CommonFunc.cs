@@ -23,6 +23,12 @@ namespace BAL
                 {
                     string fileName = Path.GetFileName(file.FileName);
                     string uploadPath = HttpContext.Current.Server.MapPath(ScriptUploadPath);
+                    
+                    //Create directory if not exist.
+                    if (!Directory.Exists(uploadPath))
+                    {
+                        Directory.CreateDirectory(uploadPath);
+                    }
 
                     string path = Path.Combine(uploadPath, fileName);
 
