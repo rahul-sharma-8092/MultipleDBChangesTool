@@ -6,7 +6,7 @@
         public string? Name { get; set; }
         public IFormFile? ScriptFile { get; set; }
         public string? PhysicalPath { get; set; }
-        public string? Serverpath { get; set; }
+        public string? ServerPath { get; set; }
         public string? Query { get; set; }
         public DateTime CreatedAT { get; set; }
     }

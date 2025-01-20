@@ -1,6 +1,14 @@
+using ProductX.Repositories;
+using ProductX.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddScoped<IScriptRepository, ScriptRepository>();
+builder.Services.AddScoped<IDatabaseRepository, DatabaseRepository>();
+builder.Services.AddScoped<IScriptService, ScriptService>();
+builder.Services.AddScoped<IDatabaseService, DatabaseService>();
+
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();

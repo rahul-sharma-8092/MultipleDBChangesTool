@@ -1,11 +1,18 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ProductX.Models;
+using ProductX.Services;
 
 namespace ProductX.Controllers
 {
     [Route("Script")]
     public class ScriptController : Controller
     {
+        public readonly IScriptService scriptService;
+        public ScriptController(IScriptService _scriptService)
+        {
+            scriptService = _scriptService;
+        }
+
         public IActionResult Index()
         {
             return View();
@@ -20,37 +27,45 @@ namespace ProductX.Controllers
 
         [HttpPost]
         [Route("Add")]
-        public IActionResult AddScript(Script scriptObj)
+        public async Task<IActionResult> AddScript(Script scriptObj)
         {
+            if (ModelState.IsValid)
+            {
+                var result = await scriptService.AddScriptFileAsync(scriptObj);
+            }
             return View();
         }
 
         [HttpGet]
         [Route("List")]
-        public IActionResult ListScript()
+        public async Task<IActionResult> ListScript()
         {
-            return View();
+            var lstScript = await scriptService.GetAllScriptFileAsync();
+            return View(lstScript);
         }
 
         [HttpDelete]
         [Route("Delete/{id}")]
-        public IActionResult DeleteScript(string id)
+        public async Task<IActionResult> DeleteScript(string id)
         {
+            var result = await scriptService.DeleteScriptFileAsync(Convert.ToInt32(id));
             return View();
         }
 
         [HttpGet]
-        [Route("Execute")]
-        public IActionResult ExecuteScript()
+        [Route("Execute/{id}")]
+        public async Task<IActionResult> ExecuteScript(string id)
         {
+
             return View();
         }
 
         [HttpGet]
-        [Route("Preview")]
-        public IActionResult PreviewScript()
+        [Route("Preview/{id}")]
+        public async Task<IActionResult> PreviewScript(string id)
         {
-            return View();
+            var script = await scriptService.GetScriptFileByIDAsync(Convert.ToInt32(id));
+            return View(script);
         }
     }
 }
